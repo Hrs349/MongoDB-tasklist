@@ -8,7 +8,7 @@ const { ObjectId } = require('mongodb')
 
 // ROUTER USUARIOS
 routerUser
-  .get("/users", async (req, res) => {
+  .get("/", async (req, res) => {
     try {
       const lista = await fnUser.ListUsers();
       res.status(200).json(lista);
@@ -28,7 +28,7 @@ routerUser
     const delUser = await fnUser.deleteUser(user);
     res.status(200).json({ userdeleted: user });
   })
-  .post(async (req, res) => {
+  .post("/",async (req, res) => {
     const usuario = req.body;
     const userjson = JSON.stringify(usuario);
     const createUser = await fnUser.addUsers(userjson);
