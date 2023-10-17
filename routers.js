@@ -4,6 +4,7 @@ const routerTask = express.Router();
 const fnUser = require("./dbController-Users");
 const fnTask = require("./dbController-task");
 const validar = require("./validation");
+const { ObjectId } = require('mongodb')
 
 // ROUTER USUARIOS
 routerUser
@@ -45,12 +46,18 @@ routerUser
 
 routerTask
   .get("/:id", async (req, res) => {
-    const id = req.params.id;
+    try{
+    const id = {_id: new ObjectId(req.params.id)};
+    console.log(id)
     const tarea = await fnTask.consultarDb(id);
     console.error(tarea);
-    res.status(200).json(tarea);
+    res.status(200).json(tarea);}
+    catch (error) {
+      console.log(error)
+
+    }
   })
-  .get( async (req, res) => {
+  .get( '/', async (req, res) => {
     try {
       const lista = await fnTask.ListaDeTareas();
       res.status(200).json(lista);
@@ -59,27 +66,32 @@ routerTask
     }
   })
  
-  .delete("/:descripcion", async (req, res) => {
-    const taskDelete = req.params.user;
-    const delTask = await fnTask.eliminarTarea(taskDelete);
+  .delete("/:id", async (req, res) => {
+    try {
+    const id = {_id: new ObjectId(req.params.id)}
+    console.log(id)
+    const delTask = await fnTask.eliminarTarea(id);
     res.status(200).json(delTask);
+    } catch (error) {
+      res.send("Tarea no encontrada")
+      console.log(error)
+    }
   })
 
-  .put("/:descripcion", (req, res) => {
-    const descripcion = req.params.descripcion;
-    const modificacion = req.body;
+  .put("/:id", (req, res) => {
+    const idTask = {_id: new ObjectId(req.params.id)};
+    const modificacion = req.body
     const taskedit = JSON.stringify(modificacion);
-    const update = fnTask.editarDb(descripcion, taskedit);
+    const update = fnTask.editarDb(idTask, taskedit);
     res.status(200).json({ update: taskedit });
   })
-  .put("/complete/:descripcion", (req, res) => {
-    const descrip = req.params.descripcion;
+  .put("/complete/:id", (req, res) => {
+    const descrip = {_id: new ObjectId(req.params.id)};
     const complete = fnTask.completeTask(descrip);
     res.status(200).send(`la tarea ${descrip} cambio su estado a completada`);
   })
-  .put("/incomplete/:descripcion", (req, res) => {
-    const descrip = req.params.descripcion;
-
+  .put("/incomplete/:id", (req, res) => {
+    const descrip = {_id: new ObjectId(req.params.id)};
     const complete = fnTask.incompleteTask(descrip);
     res.status(200).send(`la tarea ${descrip} cambio su estado a incompleta`);
   })

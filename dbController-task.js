@@ -1,7 +1,8 @@
 const { parse } = require("dotenv");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 require('dotenv').config()
-const uri = process.env.MONGOBD_URI;
+
+const uri = process.env.MONGODB_URI;
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -28,7 +29,18 @@ async function ListaDeTareas() {
     return lista;
   } catch (error) {}
 }
-
+async function consultarDb(parametro) {
+  try {
+    const collection = await conectarBaseDatos();
+    const consultaR = await collection.find(parametro).toArray();
+    console.log(parametro)
+    console.log("Resultados de la búsqueda:");
+    return consultaR;
+    await client.close();
+  } catch (error) {
+    console.log(error);
+  }
+}
 async function agregarTarea(nTask) {
   try {
     const collection = await conectarBaseDatos();
@@ -41,18 +53,8 @@ async function agregarTarea(nTask) {
   }
 }
 
-async function consultarDb(parametro) {
-  try {
-    const collection = await conectarBaseDatos();
-    const consulta = { id: parametro };
-    const consultaR = await collection.find(consulta).toArray();
-    console.log("Resultados de la búsqueda:");
-    return consultaR;
-    await client.close();
-  } catch (error) {
-    console.log(error);
-  }
-}
+
+// editar tarea
 async function editarDb(params, req) {
   try {
     const collection = await conectarBaseDatos();
@@ -95,12 +97,11 @@ async function incompleteTask(params) {
     console.log(err);
   }
 }
+// eliminar tarea
 async function eliminarTarea(parametro) {
   try {
     const collection = await conectarBaseDatos();
-    const filtro = { id: parametro };
-    const deleteTask = await collection.deleteOne(filtro);
-    console.log(`Se eliminó ${deleteTask.deletedCount} documento`);
+    const deleteTask = await collection.deleteOne(parametro);
     client.close();
   } catch (err) {
     console.log(err);

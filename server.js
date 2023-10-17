@@ -1,9 +1,10 @@
 const express = require("express");
 const app = express();
-require("dotenv").config();
-const port = process.env.PORT;
+const env= require('dotenv').config()
 
-const router = require("./router-edit-users");
+const port = process.env.PORT
+
+const router = require("./routers");
 
 app.use(express.json());
 app.use("/users", router.routerUser);
