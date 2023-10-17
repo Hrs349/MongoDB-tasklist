@@ -1,6 +1,7 @@
 const { parse } = require("dotenv");
 const { MongoClient, ServerApiVersion } = require("mongodb");
-const uri = `mongodb+srv://HRS349:123456789-@cluster0.qmulumk.mongodb.net/?retryWrites=true&w=majority&appName=AtlasApp`;
+require('dotenv').config()
+const uri = process.env.MONGOBD_URI;
 
 const client = new MongoClient(uri, {
   serverApi: {
